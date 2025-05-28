@@ -9,80 +9,52 @@
       margin: 0;
       padding: 0;
       background-color: black;
-      overflow: hidden;
       height: 100%;
       width: 100%;
     }
-    video {
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      display: block;
+    #video {
+      width: 100%;
+      height: 100%;
+      max-height: 100vh;
+      object-fit: contain;
+      background: black;
     }
-    #unmuteButton {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      font-size: 16px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: white;
-      cursor: pointer;
-      border-radius: 8px;
-      z-index: 10;
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
     }
   </style>
 </head>
 <body>
 
-  <video id="video" autoplay muted playsinline></video>
-  <button id="unmuteButton">🔊 Activar sonido</button>
+  <div class="video-container">
+    <video id="video" controls playsinline></video>
+  </div>
 
   <script>
     const video = document.getElementById('video');
-    const videoSrc = 'https://44.crackstreamslivehd.com/espn/tracks-v1a1/mono.m3u8?ip=179.38.167.159&token=db9fd5140e9fbf398d0f1c96a729842d512e7c01-67-1748485279-1748452879'; // Reemplaza por tu .m3u8
-    const unmuteButton = document.getElementById('unmuteButton');
-
-    function launchFullscreen(element) {
-      if (element.requestFullscreen) {
-        element.requestFullscreen();
-      } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-      } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-      } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
-      }
-    }
-
-    function startPlayback() {
-      video.play();
-      launchFullscreen(video);
-    }
+    const videoSrc = 'https://44.crackstreamslivehd.com/espn/tracks-v1a1/mono.m3u8?ip=179.38.167.159&token=db9fd5140e9fbf398d0f1c96a729842d512e7c01-67-1748485279-1748452879';
 
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(videoSrc);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function () {
-        startPlayback();
+        video.play();
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = videoSrc;
       video.addEventListener('loadedmetadata', function () {
-        startPlayback();
+        video.play();
       });
     } else {
       alert('Tu navegador no soporta la reproducción de HLS');
     }
-
-    unmuteButton.addEventListener('click', () => {
-      video.muted = false;
-      video.volume = 1.0;
-      video.play();
-      unmuteButton.style.display = 'none';
-    });
   </script>
 
 </body>
