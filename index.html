@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Video M3U8 en Pantalla Completa</title>
+  <title>Video M3U8 con Sonido</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     html, body {
@@ -17,16 +17,32 @@
       width: 100vw;
       height: 100vh;
       object-fit: cover;
+      display: block;
+    }
+    #unmuteButton {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
 
-  <video id="video" controls autoplay></video>
+  <video id="video" autoplay muted playsinline></video>
+  <button id="unmuteButton">🔊 Activar sonido</button>
 
   <script>
     const video = document.getElementById('video');
-    const videoSrc = 'https://44.crackstreamslivehd.com/espn/tracks-v1a1/mono.m3u8?ip=179.38.167.159&token=db9fd5140e9fbf398d0f1c96a729842d512e7c01-67-1748485279-1748452879'; // Reemplaza con tu .m3u8
+    const videoSrc = 'https://44.crackstreamslivehd.com/espn/tracks-v1a1/mono.m3u8?ip=179.38.167.159&token=db9fd5140e9fbf398d0f1c96a729842d512e7c01-67-1748485279-1748452879'; // Reemplaza por tu .m3u8
+    const unmuteButton = document.getElementById('unmuteButton');
 
     function launchFullscreen(element) {
       if (element.requestFullscreen) {
@@ -40,23 +56,33 @@
       }
     }
 
+    function startPlayback() {
+      video.play();
+      launchFullscreen(video);
+    }
+
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(videoSrc);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function () {
-        video.play();
-        launchFullscreen(video);
+        startPlayback();
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = videoSrc;
       video.addEventListener('loadedmetadata', function () {
-        video.play();
-        launchFullscreen(video);
+        startPlayback();
       });
     } else {
       alert('Tu navegador no soporta la reproducción de HLS');
     }
+
+    unmuteButton.addEventListener('click', () => {
+      video.muted = false;
+      video.volume = 1.0;
+      video.play();
+      unmuteButton.style.display = 'none';
+    });
   </script>
 
 </body>
